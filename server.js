@@ -3,9 +3,17 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+var methodOverride = require('method-override')
+
+// ADDED THE TWO LINES BELOW FOR MONGODB CONNECTION AND CONFIG
+require('dotenv').config();
+// config/database.js needs to be connected to server.js. Must take place after the require('dotenv').config(); because it needs to read the .env file
+require('./config/database')
 
 var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+var flightsRouter = require('./routes/flights');
+var arrivalsRouter = require('./routes/arrivals');
+var ticketsRouter = require('./routes/tickets');
 
 var app = express();
 
@@ -18,9 +26,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+//IS THIS NEEDED?
+app.use(methodOverride('_method'))
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
+app.use('/flights', flightsRouter);
+app.use('/', arrivalsRouter);
+app.use('/', ticketsRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
